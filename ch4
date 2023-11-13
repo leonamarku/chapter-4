@@ -1,0 +1,251 @@
+Ex 1: 
+import random
+
+class Dice:
+    def roll(self):
+        return random.randint(1, 6)
+
+def test_dice_rolls():
+    dice = Dice()
+    for _ in range(5):
+        roll1 = dice.roll()
+        roll2 = dice.roll()
+        print(f"Roll 1: {roll1}, Roll 2: {roll2}")
+
+if __name__ == "__main__":
+    test_dice_rolls()
+
+
+Ex2:
+import math
+
+class Point:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+    def invert_coordinates(self):
+        self.x, self.y = self.y, self.x
+
+    def distance_to(self, other_point):
+        return math.sqrt((self.x - other_point.x)**2 + (self.y - other_point.y)**2)
+
+    def __str__(self):
+        return f"({self.x}, {self.y})"
+
+def test_point_operations():
+    p = Point(2, 3)
+    print(p)
+    print(f"x coordinate: {p.x}")
+    p.x = 0
+    print(p)
+    q = Point(5, 6)
+    print(f"Distance to point q: {p.distance_to(q)}")
+
+if __name__ == "__main__":
+    test_point_operations()
+
+Ex3:
+class Rectangle:
+    def __init__(self, point1, point2):
+        self.point1 = point1
+        self.point2 = point2
+
+    @property
+    def area(self):
+        return abs(self.point1.x - self.point2.x) * abs(self.point1.y - self.point2.y)
+
+    @property
+    def perimeter(self):
+        return 2 * (abs(self.point1.x - self.point2.x) + abs(self.point1.y - self.point2.y))
+
+def test_rectangle_properties():
+    p1 = Point(2, 3)
+    p2 = Point(5, 6)
+    rect = Rectangle(p1, p2)
+    print(f"Area: {rect.area}")
+    print(f"Perimeter: {rect.perimeter}")
+
+if __name__ == "__main__":
+    test_rectangle_properties()
+
+
+Ex4:
+import random
+
+class Die:
+    def __init__(self, top_face=1, num_faces=6):
+        self.num_faces = num_faces
+        self.top_face = top_face
+
+    def roll(self):
+        self.top_face = random.randint(1, self.num_faces)
+
+    def __str__(self):
+        return f"Top Face: {self.top_face}, Number of Faces: {self.num_faces}"
+
+def test_die_rolls():
+    dice_list = [Die() for _ in range(4)]
+    for _ in range(5):
+        for die in dice_list:
+            die.roll()
+            print(die)
+
+if __name__ == "__main__":
+    test_die_rolls()
+
+
+Ex5:
+class Terminal:
+    def __init__(self, phone_number):
+        if len(phone_number) == 9 and phone_number[0] in ['6', '7', '9'] and phone_number.isdigit():
+            self.phone_number = phone_number
+            self.conversation_time = 0
+        else:
+            raise ValueError("Invalid phone number")
+
+    def call(self, other_terminal, duration):
+        self.conversation_time += duration
+        other_terminal.conversation_time += duration
+
+    def __str__(self):
+        return f"{self.phone_number[:3]} {self.phone_number[3:5]} {self.phone_number[5:7]} {self.phone_number[7:]} - Conversation time: {self.conversation_time}s"
+
+class Mobile(Terminal):
+    RATES = {
+        "rat": 0.05,
+        "monkey": 0.15,
+        "elephant": 0.30
+    }
+
+    def __init__(self, phone_number, rate):
+        super().__init__(phone_number)
+        self.rate = rate
+        self.call_cost = 0
+
+    def call(self, other_terminal, duration):
+        self.conversation_time += duration
+        self.call_cost += duration * Mobile.RATES[self.rate]
+        other_terminal.conversation_time += duration
+
+    def __str__(self):
+        return f"{self.phone_number} - {self.conversation_time}s of conversation - charged {self.call_cost:.2f}€"
+
+def test_terminal_and_mobile():
+    t1 = Terminal("666112233")
+    t2 = Terminal("666744459")
+    t3 = Terminal("632128919")
+    t4 = Terminal("664135818")
+    print(t1)
+    print(t2)
+    t1.call(t2, 420)
+    t1.call(t3, 210)
+    print(t1)
+    print(t2)
+    print(t3)
+    print(t4)
+
+    m1 = Mobile("666112233", "rat")
+    m2 = Mobile("666744459", "monkey")
+    m3 = Mobile("632128919", "elephant")
+    print(m1)
+    print(m2)
+    m1.call(m2, 210)
+    m1.call(m3, 320)
+    m2.call(m3, 450)
+    print(m1)
+    print(m2)
+    print(m3)
+
+if __name__ == "__main__":
+    test_terminal_and_mobile()
+
+
+
+Ex: 6: 
+import random
+
+class Card:
+    def __init__(self, suit, value):
+        self.suit = suit
+        self.value = value
+
+    def __str__(self):
+        return f"{self.value} of {self.suit}"
+
+class Hand:
+    def __init__(self):
+        self.cards = []
+
+    def draw(self, deck, num_cards=1):
+        drawn_cards = deck.deal(num_cards)
+        self.cards.extend(drawn_cards)
+
+    def discard(self, card):
+        if card in self.cards:
+            self.cards.remove(card)
+
+    def receive_cards(self, cards):
+        self.cards.extend(cards)
+
+    def __str__(self):
+        return ", ".join(map(str, self.cards))
+
+class Deck:
+    def __init__(self, suits, values):
+        self.cards = [Card(suit, value) for suit in suits for value in values]
+
+    def deal(self, num_cards):
+        if num_cards <= len(self.cards):
+            dealt_cards = self.cards[:num_cards]
+            self.cards = self.cards[num_cards:]
+            return dealt_cards
+        else:
+            raise ValueError("Not enough cards in the deck to deal.")
+
+    def draw(self):
+        if self.cards:
+            return self.cards.pop(0)
+        else:
+            raise ValueError("The deck is empty.")
+
+    def shuffle(self):
+        random.shuffle(self.cards)
+
+class SpanishDeck(Deck):
+    def __init__(self):
+        suits = ["Coins", "Cups", "Swords", "Clubs"]
+        values = ["1", "2", "3", "4", "5", "6", "7", "10", "11", "12"]
+        super().__init__(suits, values)
+
+class EnglishDeck(Deck):
+    def __init__(self):
+        suits = ["Hearts", "Diamonds", "Clubs", "Spades"]
+        values = ["2", "3", "4", "5", "6", "7", "8", "9", "10", "Jack", "Queen", "King", "Ace"]
+        super().__init__(suits, values)
+
+def test_card_deck_hand():
+    spanish_deck = SpanishDeck()
+    english_deck = EnglishDeck()
+
+    hand = Hand()
+
+    spanish_deck.shuffle()
+    english_deck.shuffle()
+
+    print("Spanish Deck:")
+    print(spanish_deck.draw())
+    print(spanish_deck.draw())
+
+    print("\nEnglish Deck:")
+    print(english_deck.draw())
+    print(english_deck.draw())
+
+    hand.draw(spanish_deck, 3)
+    hand.draw(english_deck, 2)
+
+    print("\nHand:")
+    print(hand)
+
+if __name__ == "__main__":
+    test_card_deck_hand()
